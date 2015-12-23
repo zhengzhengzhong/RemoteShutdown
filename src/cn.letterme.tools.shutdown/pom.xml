@@ -1,0 +1,164 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cn.letterme.tools</groupId>
+	<artifactId>cn.letterme.tools.shutdown</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>cn.letterme.tools.shutdown</name>
+
+	<organization>
+        <name>LetterMe</name>
+        <url>http://www.letterme.cn</url>
+    </organization>
+
+    <properties>
+    	<project.dir>../../</project.dir>
+    	<release.dir>${project.dir}/release</release.dir>
+    	<src.dir>${project.dir}/src</src.dir>
+    	<package.dir>${project.dir}/package</package.dir>
+    	<app.name>cn.letterme.tools.shutdown</app.name>
+    </properties>
+
+    <developers>
+        <developer>
+            <id>Main</id>
+            <name>Zhengzhong Zheng</name>
+            <email>zhengzhengzhong@outlook.com</email>
+            <url>http://www.letterme.cn</url>
+            <organization>LetterMe</organization>
+            <organizationUrl>http://www.letterme.cn</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.expectit</groupId>
+			<artifactId>expectit-core</artifactId>
+			<version>0.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.53</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.4</version>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.9</version>
+		</dependency>
+	</dependencies>
+
+	 <!-- 编译打包 -->
+    <build>
+        <!-- 控制资源文件的拷贝 -->
+        <!--resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>${project.build.outputDirectory}</targetPath>
+            </resource>
+        </resources-->
+
+        <plugins>
+            <!-- 解决资源文件的编码问题 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- 设置源文件编码方式 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- 拷贝依赖外部的jar包 -->
+	        <plugin>
+	        	<groupId>org.apache.maven.plugins</groupId>
+	        	<artifactId>maven-dependency-plugin</artifactId>
+	        	<executions>
+	        		<execution>
+	        			<id>copy-dependencies</id>
+	        			<phase>package</phase>
+	        			<goals>
+	        				<goal>copy-dependencies</goal>
+	        			</goals>
+	        			<configuration>
+	        				<outputDirectory>${release.dir}/lib</outputDirectory>
+	        				<overWriteReleases>true</overWriteReleases>
+	        				<overWriteSnapshots>true</overWriteSnapshots>
+	        				<overWriteIfNewer>true</overWriteIfNewer>
+	        			</configuration>
+	        		</execution>
+	        	</executions>
+	        </plugin>
+
+            <!-- 打包jar文件时，配置manifest文件，加入lib包的jar依赖 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- 拷贝编译好的包到指定目录，并打包成zip文件 -->
+            <plugin>
+            	<artifactId>maven-antrun-plugin</artifactId>
+            	<executions>
+            		<execution>
+            			<id>copy-lib-src-jars</id>
+            			<phase>package</phase>
+            			<configuration>
+            				<tasks>
+            					<copy todir="${release.dir}/lib">
+            						<fileset dir="./target/">
+            							<include name="*.jar" />
+            						</fileset>
+            					</copy>
+            					<zip destfile="${package.dir}/${app.name}.release.zip">
+            						<fileset dir="${release.dir}">
+            							<include name="*" />
+            							<include name="lib/*.jar" />
+            							<include name="conf/*.*" />
+            							<include name="bin/*.*" />
+            							<exclude name="*.zip" />
+            						</fileset>
+            					</zip>
+            				</tasks>
+            			</configuration>
+            			<goals>
+            				<goal>run</goal>
+            			</goals>
+            		</execution>
+            	</executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

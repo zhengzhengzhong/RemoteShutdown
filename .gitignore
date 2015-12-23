@@ -1,0 +1,17 @@
+# class file
+*.class
+
+# binary file
+*.jar
+
+# settings
+.settings
+
+# eclipse project file
+.project
+
+# release file
+*.zip
+
+# target
+target
