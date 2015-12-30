@@ -9,9 +9,13 @@
 
 # eclipse project file
 .project
+.classpath
 
 # release file
 *.zip
 
 # target
 target
+
+# debug file
+*.log
