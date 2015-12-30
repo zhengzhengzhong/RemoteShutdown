@@ -2,7 +2,8 @@ package cn.letterme.tools.shutdown.base.service;
 
 import java.util.concurrent.Callable;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.letterme.tools.shutdown.base.ICallback;
 import cn.letterme.tools.shutdown.base.model.TaskResult;
@@ -18,7 +19,7 @@ public abstract class AbstractService implements Callable<Object>
     /**
      * 日志
      */
-    private static final Logger LOGGER = Logger.getLogger(AbstractService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractService.class);
     
     /**
      * 回调
@@ -44,6 +45,7 @@ public abstract class AbstractService implements Callable<Object>
      */
     public TaskResult call()
     {
+        LOGGER.debug("The service called.");
         TaskResult obj = null;
         try
         {

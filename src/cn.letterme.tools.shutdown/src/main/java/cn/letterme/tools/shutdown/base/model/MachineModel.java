@@ -2,6 +2,7 @@ package cn.letterme.tools.shutdown.base.model;
 
 import cn.letterme.tools.shutdown.base.constant.OsTypeEnum;
 import cn.letterme.tools.shutdown.base.constant.StatusEnum;
+import cn.letterme.tools.shutdown.util.EncryptUtil;
 import net.sf.json.JSONObject;
 
 /**
@@ -119,7 +120,7 @@ public class MachineModel
     {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("user", user);
-        jsonObject.put("passwd", passwd);
+        jsonObject.put("passwd", EncryptUtil.encrypt(passwd));
         jsonObject.put("osType", osType);
         jsonObject.put("ip", ip);
         return jsonObject;
@@ -137,6 +138,8 @@ public class MachineModel
             return null;
         }
         
-        return (MachineModel) JSONObject.toBean(jsonObj, MachineModel.class);
+        MachineModel model = (MachineModel) JSONObject.toBean(jsonObj, MachineModel.class);
+        model.setPasswd(EncryptUtil.decrypt(model.getPasswd()));
+        return model;
     }
 }

@@ -6,7 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 多线程执行Ping操作，立即执行，用于关机服务前置处理
@@ -19,7 +20,7 @@ public class PingFixedExcutor
     /**
      * 日志
      */
-    private static final Logger LOGGER = Logger.getLogger(PingFixedExcutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PingFixedExcutor.class);
     
     /**
      * 最大线程数量
@@ -64,7 +65,7 @@ public class PingFixedExcutor
      */
     public PingFixedExcutor(int threadNum)
     {
-        LOGGER.info("now setup the excutor, threadNum = " + threadNum);
+        LOGGER.info("now setup the excutor, threadNum : {}.", threadNum);
         this.threadNum = threadNum;
         excutorService = Executors.newFixedThreadPool(this.threadNum, new ThreadFactory()
         {
@@ -73,7 +74,7 @@ public class PingFixedExcutor
              */
             public Thread newThread(Runnable r)
             {
-                LOGGER.debug("now setup a new thread, threadidx = " + threadIdx);
+                LOGGER.debug("now setup a new thread, threadidx : {}.", threadIdx);
                 return new Thread(r, "Ping-Fixed-" + threadIdx++);
             }
         });
@@ -108,24 +109,4 @@ public class PingFixedExcutor
         LOGGER.info("now shutdown the excutor.");
         excutorService.shutdownNow();
     }
-    
-//    public static void main(String[] args) throws Exception
-//    {
-//        MachineModel machine1 = new MachineModel();
-//        machine1.setIp("10.10.10.10");
-//        MachineModel machine2 = new MachineModel();
-//        machine2.setIp("192.168.1.1");
-//        Future<Object> future1 = PingFixedExcutor.getInstance().submit(new PingServiceImpl(machine1, 3));
-//        Future<Object> future2 = PingFixedExcutor.getInstance().submit(new PingServiceImpl(machine2, 3));
-//        while (!future2.isDone())
-//        {
-//            Thread.sleep(1000);
-//        }
-//        System.out.println(future2.get());
-//        while (!future1.isDone())
-//        {
-//            Thread.sleep(1000);
-//        }
-//        System.out.println(future1.get());
-//    }
 }

@@ -3,7 +3,8 @@ package cn.letterme.tools.shutdown.base.service;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.letterme.tools.shutdown.base.constant.OsTypeEnum;
 import cn.letterme.tools.shutdown.base.constant.StatusEnum;
@@ -21,7 +22,7 @@ public abstract class ShutdownServiceImpl extends AbstractService
     /**
      * 日志
      */
-    private static final Logger LOGGER = Logger.getLogger(ShutdownServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShutdownServiceImpl.class);
     
     /**
      * 待关机对象
@@ -50,6 +51,8 @@ public abstract class ShutdownServiceImpl extends AbstractService
             return null;
         }
         
+        LOGGER.debug("Now new instance the shutdown service, machine info = {}.", machine.toString());
+        
         if (OsTypeEnum.Windows.equals(machine.getOsType()))
         {
             LOGGER.info("the osType is windows, return the ShutdownServiceWinImpl.");
@@ -62,7 +65,7 @@ public abstract class ShutdownServiceImpl extends AbstractService
             return new ShutdownServiceLinuxImpl(machine);
         }
         
-        LOGGER.error("unknown osType (" + machine.getOsType() + "), will return null.");
+        LOGGER.error("unknown osType ({}), will return null.", machine.getOsType());
         return null;
     }
     
@@ -78,7 +81,7 @@ public abstract class ShutdownServiceImpl extends AbstractService
     @Override
     public void before() throws Exception
     {
-        LOGGER.info("excute the before operation.");
+        LOGGER.info("Now excute the before operation.");
         
         // 通过ping看机器是否在线，重试3次
         Future<Object> future = PingFixedExcutor.getInstance().submit(new PingServiceImpl(machine, 3));
@@ -94,9 +97,11 @@ public abstract class ShutdownServiceImpl extends AbstractService
         
         if (machine.getStatus() != StatusEnum.Online)
         {
-            LOGGER.error("the machine is offline, ip = " + machine.getIp());
-            throw new Exception("Machine status is not online, status = " + machine.getStatus() + ", ip = " + machine.getIp());
+            LOGGER.error("the machine is offline, ip : {}.", machine.getIp());
+            throw new Exception("Machine status is not online, status : " + machine.getStatus() + ", ip : " + machine.getIp() + ".");
         }
+        
+        LOGGER.info("End extute the before operation.");
     }
 
     /**

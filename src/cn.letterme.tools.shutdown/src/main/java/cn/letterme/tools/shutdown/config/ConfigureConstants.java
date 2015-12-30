@@ -25,11 +25,6 @@ public class ConfigureConstants
     public static final String APPLICATION_CFG_PATH = getCfgPath("application.cfg");
     
     /**
-     * 日志配置文件路径
-     */
-    public static final String LOG_CFG_PATH = getCfgPath("logger.properties");
-    
-    /**
      * 获取工具根目录
      * @return 工具根目录
      */
@@ -45,6 +40,6 @@ public class ConfigureConstants
      */
     private static String getCfgPath(String cfgName)
     {
-        return getRoot() + File.separator + "etc" + File.separator + cfgName;
+        return getRoot() + File.separator + "conf" + File.separator + cfgName;
     }
 }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+    <configuration>
+        <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>
+                    %d{HH:mm:ss.SSS} [%thread %-5level] %logger{36} - %msg%n
+                </pattern>
+            </encoder>
+        </appender>
+        
+        <appender name="debug" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>./logs/debug.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>./logs/debug.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>5</maxHistory>
+                <maxFileSize>5MB</maxFileSize>
+            </rollingPolicy>
+            <!--filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>DEBUG</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter-->
+            <encoder>
+                <pattern>
+                    %d{HH:mm:ss.SSS} [%thread %-5level] %logger{36} - %msg%n
+                </pattern>
+            </encoder>
+        </appender>
+        <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>./logs/error.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>./logs/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>5</maxHistory>
+                <maxFileSize>5MB</maxFileSize>
+            </rollingPolicy>
+            <!--filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter-->
+            <encoder>
+                <pattern>
+                    %d{HH:mm:ss.SSS} [%thread %-5level] %logger{35} - %msg%n
+                </pattern>
+            </encoder>
+        </appender>
+
+        <root level="ERROR">
+            <appender-ref ref="stdout" />
+            <appender-ref ref="error" />
+            <appender-ref ref="debug" />
+        </root>
+        <root level="WARN">
+            <appender-ref ref="debug" />
+        </root>
+        <root level="INFO">
+            <appender-ref ref="debug" />
+        </root>
+        <root level="DEBUG">
+            <appender-ref ref="stdout" />
+            <appender-ref ref="debug" />
+        </root>
+    </configuration>

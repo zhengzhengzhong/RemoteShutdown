@@ -5,7 +5,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 定期执行的Ping操作
@@ -17,7 +18,7 @@ public class PingScheduledExcutor
     /**
      * 日志
      */
-    private static final Logger LOGGER = Logger.getLogger(PingScheduledExcutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PingScheduledExcutor.class);
     
     /**
      * 线程大小
@@ -86,7 +87,7 @@ public class PingScheduledExcutor
         this.period = period;
         this.corePoolSize = corePoolSize;
         
-        LOGGER.info("now setup the excutor, delay = " + delay + ", period = " + period + ", corePoolSize = " + corePoolSize);
+        LOGGER.info("now setup the excutor, delay = {}, period = {}, corePoolSize = {}.", delay, period, corePoolSize);
         excutorService = Executors.newScheduledThreadPool(this.corePoolSize, new ThreadFactory()
         {
             public Thread newThread(Runnable r)
@@ -115,27 +116,4 @@ public class PingScheduledExcutor
         LOGGER.info("now shutdown the excutor.");
         excutorService.shutdownNow();
     }
-    
-//    public static void main(String[] args)
-//    {
-//        MachineModel machine1 = new MachineModel();
-//        machine1.setIp("192.168.1.1");
-//        MachineModel machine2 = new MachineModel();
-//        machine2.setIp("10.10.10.10");
-//        ICallback callback = new ICallback()
-//        {
-//            public MachineModel callback(MachineModel input)
-//            {
-//                System.out.println("callback " + input);
-//                return null;
-//            }
-//        };
-//        
-//        PingServiceImpl service1 = new PingServiceImpl(machine1, 3);
-//        service1.setCallback(callback);
-//        PingServiceImpl service2 = new PingServiceImpl(machine2, 3);
-//        service2.setCallback(callback);
-//        PingScheduledExcutor.getInstance().submit(service1);
-//        PingScheduledExcutor.getInstance().submit(service2);
-//    }
 }

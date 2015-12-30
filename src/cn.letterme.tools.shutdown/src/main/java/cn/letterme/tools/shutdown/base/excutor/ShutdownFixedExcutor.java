@@ -6,7 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 关机执行类
@@ -18,7 +19,7 @@ public class ShutdownFixedExcutor
     /**
      * 日志
      */
-    private static final Logger LOGGER = Logger.getLogger(ShutdownFixedExcutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShutdownFixedExcutor.class);
     
     /**
      * 线程池大小
@@ -65,7 +66,7 @@ public class ShutdownFixedExcutor
         {
             public Thread newThread(Runnable r)
             {
-                LOGGER.debug("now setup a thread, threadIdx = " + threadIdx);
+                LOGGER.debug("now setup a thread, threadIdx : {}.", threadIdx);
                 return new Thread(r, "Shutdown-Fixed-" + threadIdx++);
             }
         });
@@ -99,47 +100,4 @@ public class ShutdownFixedExcutor
         LOGGER.info("now shutdown the excutor.");
         excutorService.shutdownNow();
     }
-    
-//    public static void main(String[] args) throws Exception
-//    {
-//        MachineModel machine1 = new MachineModel();
-//        machine1.setIp("192.168.1.1");
-//        machine1.setOsType(OsTypeEnum.Windows);
-//        machine1.setPasswd("Changeme123");
-//        machine1.setPasswd("administrator");
-//        ShutdownServiceImpl service1 = ShutdownServiceImpl.newInstance(machine1);
-//        Future<Object> future1 = ShutdownFixedExcutor.getInstance().submit(service1);
-//        
-//        MachineModel machine2 = new MachineModel();
-//        machine2.setIp("10.10.10.10");
-//        machine2.setOsType(OsTypeEnum.Windows);
-//        machine2.setPasswd("Changeme123");
-//        machine2.setPasswd("administrator");
-//        ShutdownServiceImpl service2 = ShutdownServiceImpl.newInstance(machine2);
-//        Future<Object> future2 = ShutdownFixedExcutor.getInstance().submit(service2);
-//        
-//        MachineModel machine3 = new MachineModel();
-//        machine3.setIp("192.168.1.1");
-//        machine3.setOsType(OsTypeEnum.Linux);
-//        machine3.setPasswd("Changeme123");
-//        machine3.setPasswd("administrator");
-//        ShutdownServiceImpl service3 = ShutdownServiceImpl.newInstance(machine3);
-//        Future<Object> future3 = ShutdownFixedExcutor.getInstance().submit(service3);
-//        
-//        while (!future1.isDone())
-//        {
-//            Thread.sleep(1000);
-//        }
-//        while (!future2.isDone())
-//        {
-//            Thread.sleep(1000);
-//        }
-//        while (!future3.isDone())
-//        {
-//            Thread.sleep(1000);
-//        }
-//        System.out.println(future1.get());
-//        System.out.println(future2.get());
-//        System.out.println(future3.get());
-//    }
 }

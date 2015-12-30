@@ -7,7 +7,8 @@ import static net.sf.expectit.matcher.Matchers.contains;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSch;
@@ -29,7 +30,7 @@ public class ShutdownServiceLinuxImpl extends ShutdownServiceImpl
     /**
      * 日志
      */
-    private static final Logger LOGGER = Logger.getLogger(ShutdownServiceLinuxImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShutdownServiceLinuxImpl.class);
     
     /**
      * 构造函数
@@ -45,7 +46,7 @@ public class ShutdownServiceLinuxImpl extends ShutdownServiceImpl
      */
     public void shutdown()
     {
-        LOGGER.info("excute the shutdown operation.");
+        LOGGER.info("Begin excute the shutdown operation, machine info = {}.", machine.toString());
         
         Channel channel = null;
         Expect expect = null;
@@ -76,7 +77,8 @@ public class ShutdownServiceLinuxImpl extends ShutdownServiceImpl
         }
         catch (JSchException e)
         {
-            LOGGER.error("excute shutdown operation error, ip = " + machine.getIp() + ", ", e);
+            LOGGER.error("excute shutdown operation error, ip : {}.", machine.getIp());
+            LOGGER.error("", e);
         }
         catch (IOException e)
         {
@@ -95,5 +97,6 @@ public class ShutdownServiceLinuxImpl extends ShutdownServiceImpl
             channel.disconnect();
             session.disconnect();
         }
+        LOGGER.info("End shutdown operation.");
     }
 }

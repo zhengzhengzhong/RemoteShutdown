@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.letterme.tools.shutdown.base.constant.StatusEnum;
 import cn.letterme.tools.shutdown.base.model.MachineModel;
@@ -21,7 +22,7 @@ public class PingServiceImpl extends AbstractService implements Runnable
     /**
      * 日志
      */
-    private static final Logger LOGGER = Logger.getLogger(PingServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PingServiceImpl.class);
     
     /**
      * Ping操作的超时时间 - 3秒
@@ -48,14 +49,16 @@ public class PingServiceImpl extends AbstractService implements Runnable
      */
     public void ping()
     {
+        LOGGER.debug("Now begin ping the machine, machine info is : {}.", model.toString());
+        
         // retry超出期望范围，默认为1
         if (retry <= 0)
         {
-            LOGGER.info("the retry is out of expected (" + retry + "), set the default value(1).");
+            LOGGER.info("the retry is out of expected ({}), set the default value(1).", retry);
             retry = 1;
         }
 
-        LOGGER.info("excute ping, ip = " + model.getIp() + ", retry = " + retry);
+        LOGGER.info("excute ping, ip : {}, retry :{}. ", model.getIp(), retry);
         while (retry > 0)
         {
             try
@@ -64,6 +67,7 @@ public class PingServiceImpl extends AbstractService implements Runnable
                 if (status)
                 {
                     model.setStatus(StatusEnum.Online);
+                    LOGGER.debug("End ping the machine, status is [Online].");
                     return ;
                 }
             }
@@ -79,6 +83,7 @@ public class PingServiceImpl extends AbstractService implements Runnable
             retry--;
         }
         
+        LOGGER.debug("End ping the machine, status is [Offline].");
         model.setStatus(StatusEnum.Offline);
         return ;
     }

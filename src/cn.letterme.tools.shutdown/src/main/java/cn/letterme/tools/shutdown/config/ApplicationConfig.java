@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.letterme.tools.shutdown.base.model.MachineModel;
 import cn.letterme.tools.shutdown.util.IOUtil;
@@ -27,7 +28,7 @@ public class ApplicationConfig
     /**
      * 日志
      */
-    private static final Logger LOGGER = Logger.getLogger(ApplicationConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationConfig.class);
     
     /**
      * 单例
@@ -49,10 +50,18 @@ public class ApplicationConfig
      */
     public List<MachineModel> loadMachines()
     {
+        LOGGER.debug("Begin load machines");
         List<MachineModel> machines = new ArrayList<MachineModel>();
         
         String machineInfoCfg = ConfigureConstants.MACHINE_CFG_PATH;
         File cfgFile = new File(machineInfoCfg);
+        
+        if (!cfgFile.exists())
+        {
+            LOGGER.error("machine.cfg not exist.");
+            return machines;
+        }
+        
         FileReader fr = null;
         StringBuffer sb = new StringBuffer();
         try
@@ -80,10 +89,9 @@ public class ApplicationConfig
         String machinesInfo = sb.toString();
         if (machinesInfo.trim().isEmpty())
         {
+            LOGGER.debug("The machine info is null or empty.");
             return machines;
         }
-        
-        // decrypt
         
         JSONArray jsonArray = JSONArray.fromObject(machinesInfo);
         
@@ -94,6 +102,7 @@ public class ApplicationConfig
             MachineModel machine = MachineModel.fromJSONObject(jsonObj);
             if (null != machine)
             {
+                LOGGER.debug("The machine info is : ip = {}, osType = {}.", machine.getIp(), machine.getOsType());
                 machines.add(machine);
             }
         }
@@ -107,6 +116,7 @@ public class ApplicationConfig
      */
     public void saveMachineModel(List<MachineModel> machines)
     {
+        LOGGER.debug("Begin save machine infos.");
         if (null == machines || machines.isEmpty())
         {
             LOGGER.error("save the machine infos error, due to the machines is null or empty.");
@@ -123,15 +133,19 @@ public class ApplicationConfig
             {
                 continue;
             }
+            LOGGER.debug("The machine info is: ip = {}, osType = {}.", machine.getIp(), machine.getOsType());
             jsonArray.add(machine.toJsonObject());
         }
         
         FileWriter fw = null;
         try
         {
-            fw = new FileWriter(cfgFile);
-            // encrypt
+            if (!cfgFile.exists())
+            {
+                cfgFile.createNewFile();
+            }
             
+            fw = new FileWriter(cfgFile);
             fw.write(jsonArray.toString());
         }
         catch (IOException e)

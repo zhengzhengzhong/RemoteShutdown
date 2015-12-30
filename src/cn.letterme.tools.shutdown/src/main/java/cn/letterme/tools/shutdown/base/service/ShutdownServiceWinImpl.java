@@ -5,7 +5,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.letterme.tools.shutdown.base.model.MachineModel;
 
@@ -20,7 +21,7 @@ public class ShutdownServiceWinImpl extends ShutdownServiceImpl
     /**
      * 日志
      */
-    private static final Logger LOGGER = Logger.getLogger(ShutdownServiceWinImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShutdownServiceWinImpl.class);
     
     /**
      * 构造函数
@@ -39,7 +40,7 @@ public class ShutdownServiceWinImpl extends ShutdownServiceImpl
 
     public void shutdown()
     {
-        LOGGER.info("now excute the shutdown operation.");
+        LOGGER.info("Begin excute the shutdown operation, machine info = {}.", machine.toString());
         
         String cmd = String.format(SHUTDONW_CMD_TEMPLATE, machine.getIp(), machine.getUser(), machine.getPasswd());
         try
@@ -56,31 +57,36 @@ public class ShutdownServiceWinImpl extends ShutdownServiceImpl
         }
         catch (Exception e)
         {
-            LOGGER.error("excute the shutdown operation error, ip = " + machine.getIp() + ",", e);
+            LOGGER.error("excute the shutdown operation error, ip : {}.", machine.getIp());
+            LOGGER.error("", e);
         }
+        
+        LOGGER.info("End shutdown operation.");
     }
-    
-//    public static void main(String[] args)
-//    {
-//        MachineModel machine = new MachineModel();
-//        machine.setIp("127.0.0.1");
-//        machine.setUser("why");
-//        machine.setPasswd("1234");
-//        ShutdownServiceWinImpl shutdownServiceWinImpl = new ShutdownServiceWinImpl(machine);
-//        shutdownServiceWinImpl.shutdown();
-//    }
 
+    /**
+     * 输出流
+     * @author zhengzhengzhong@outlook.com
+     * @since 1.0.0
+     */
     class StreamDrainerThread implements Runnable
     {
         private InputStream ins;
 
         private StringBuffer output = new StringBuffer();
 
+        /**
+         * 构造函数
+         * @param ins 输入流
+         */
         public StreamDrainerThread(InputStream ins)
         {
             this.ins = ins;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public void run()
         {
             try
@@ -105,6 +111,10 @@ public class ShutdownServiceWinImpl extends ShutdownServiceImpl
             }
         }
         
+        /**
+         * 获取输出流
+         * @return 输出
+         */
         public String getOutput()
         {
             return output.toString();
